@@ -31,12 +31,6 @@ def main():
         help='不创建配置文件备份'
     )
 
-    parser.add_argument(
-        '--version', '-v',
-        action='version',
-        version='%(prog)s 1.0.0'
-    )
-
     args = parser.parse_args()
 
     try:
