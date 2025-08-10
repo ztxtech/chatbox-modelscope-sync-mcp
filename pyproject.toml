@@ -12,7 +12,7 @@ build-backend = "setuptools.build_meta"
 name = "chatbox-modelscope-sync-mcp"
 version = "0.0.1"
 authors = [
-    { name = "ztxtech", email = "ztxtechfoxmail.com" },
+    { name = "ztxtech", email = "ztxtech@foxmail.com" },
 ]
 description = "一键同步ModelScope MCP服务器到Chatbox配置的Python工具"
 readme = "README.md"
