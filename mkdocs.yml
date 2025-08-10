@@ -1,7 +1,7 @@
-site_name: ztxexp PyPi package
+site_name: chatbox-modelscope-sync-mcp PyPi package
 site_description: Documentation for the project
-repo_url: https://github.com/ztxtech/ztxexp
-repo_name: ztxtech/ztxexp
+repo_url: https://github.com/ztxtech/chatbox-modelscope-sync-mcp
+repo_name: ztxtech/chatbox-modelscope-sync-mcp
 theme:
   name: material
   palette:
@@ -23,11 +23,8 @@ nav:
 - Home: index.md
 - API Reference:
   - Api Overview: api/index.md
-  - Analyzer: api/analyzer.md
-  - Environment: api/environment.md
-  - Manager: api/manager.md
-  - Runner: api/runner.md
-  - Utils: api/utils.md
+  - Cli: api/cli.md
+  - Sync: api/sync.md
 plugins:
 - search
 - mkdocstrings:
