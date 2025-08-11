@@ -83,6 +83,12 @@ def main():
         help='不创建配置文件备份'
     )
 
+    parser.add_argument(
+        '--export',
+        metavar='OUTPUT_PATH',
+        help='导出纯MCP JSON格式到指定文件路径'
+    )
+
     args = parser.parse_args()
 
     try:
@@ -91,6 +97,15 @@ def main():
             config_path=args.path,
             api_url=args.url
         )
+
+        if args.export:
+            success = syncer.export_mcp_json_to_file(args.export)
+            if success:
+                print("✅ MCP JSON导出成功!")
+            else:
+                print("❌ MCP JSON导出失败")
+                sys.exit(1)
+            return
 
         success = syncer.sync(backup=not args.no_backup)
 

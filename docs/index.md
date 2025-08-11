@@ -17,7 +17,23 @@
 
 ## 📦 安装
 
-### 通过pip安装（推荐）
+### 通过uvx运行（无需安装，推荐）
+
+使用 [uv](https://docs.astral.sh/uv/) 可以无需安装直接运行：
+
+```bash
+# 直接运行（首次会自动下载）
+uvx chatbox-modelscope-sync-mcp --token YOUR_API_TOKEN
+
+# 导出配置
+uvx chatbox-modelscope-sync-mcp --token YOUR_API_TOKEN --export mcp-servers.json
+
+# 使用环境变量
+export MODELSCOPE_API_KEY=your_api_token_here
+uvx chatbox-modelscope-sync-mcp
+```
+
+### 通过pip安装
 
 ```bash
 pip install chatbox-modelscope-sync-mcp
@@ -41,7 +57,20 @@ pip install -e .
 
 ### 2. 运行同步
 
-#### 命令行方式
+#### uvx方式（无需安装，推荐）
+
+```bash
+# 直接运行
+uvx chatbox-modelscope-sync-mcp --token YOUR_API_TOKEN
+
+# 简写命令
+uvx chatbox-mcp-sync-mcp -t YOUR_TOKEN
+
+# 指定配置文件路径
+uvx chatbox-modelscope-sync-mcp --token YOUR_TOKEN --path /path/to/config.json
+```
+
+#### 命令行方式（已安装）
 
 ```bash
 # 使用命令行参数
@@ -63,6 +92,25 @@ export CHATBOX_CONFIG=/path/to/config.json  # 可选
 
 # 运行同步
 chatbox-modelscope-sync
+```
+
+**支持的环境变量：**
+
+| 环境变量名 | 说明 | 示例 |
+|-----------|------|------|
+| `MODELSCOPE_API_KEY` | ModelScope API访问令牌 | `sk-xxxxxxxxxxxxxxxx` |
+| `CHATBOX_CONFIG` | Chatbox配置文件路径 | `/home/user/.config/xyz.chatboxapp.app/config.json` |
+
+**Windows PowerShell设置：**
+
+```powershell
+# 设置环境变量
+$env:MODELSCOPE_API_KEY="your_api_token_here"
+$env:CHATBOX_CONFIG="C:\Users\YourName\AppData\Roaming\xyz.chatboxapp.app\config.json"
+
+# 永久设置（需要管理员权限）
+[Environment]::SetEnvironmentVariable("MODELSCOPE_API_KEY", "your_api_token_here", "User")
+[Environment]::SetEnvironmentVariable("CHATBOX_CONFIG", "C:\path\to\config.json", "User")
 ```
 
 #### Python代码方式
@@ -88,14 +136,26 @@ syncer.sync(backup=True)
 配置项按以下优先级加载：
 
 1. **命令行参数**（最高优先级）
-   - `--token`, `--path`, `--url`
+   - `--token`, `--path`, `--url`, `--export`
 
 2. **环境变量**
-   - `MODELSCOPE_API_KEY`
-   - `CHATBOX_CONFIG`
+   - `MODELSCOPE_API_KEY` - ModelScope API访问令牌
+   - `CHATBOX_CONFIG` - Chatbox配置文件路径
 
 3. **自动检测**（最低优先级）
    - 自动检测Chatbox默认配置路径
+
+**优先级示例：**
+
+```bash
+# 命令行参数会覆盖环境变量
+export MODELSCOPE_API_KEY="env_token"
+chatbox-modelscope-sync --token "cli_token"  # 使用cli_token而不是env_token
+
+# 环境变量会覆盖自动检测
+export CHATBOX_CONFIG="/custom/path/config.json"
+chatbox-modelscope-sync  # 使用环境变量指定的路径而不是自动检测路径
+```
 
 ## 🖥️ 支持的平台
 
@@ -111,7 +171,7 @@ syncer.sync(backup=True)
 chatbox-modelscope-sync --help
 
 # 输出：
-usage: chatbox-modelscope-sync [-h] [--token TOKEN] [--path PATH] [--url URL] [--no-backup] [--version]
+usage: chatbox-modelscope-sync [-h] [--token TOKEN] [--path PATH] [--url URL] [--export EXPORT] [--no-backup] [--version]
 
 Chatbox ModelScope MCP Sync Tool
 
@@ -120,11 +180,46 @@ options:
   -t, --token TOKEN     ModelScope API Token (也可以使用 MODELSCOPE_API_KEY 环境变量)
   -p, --path PATH       Chatbox配置文件路径 (也可以使用 CHATBOX_CONFIG 环境变量)
   --url URL             ModelScope MCP API URL
+  --export EXPORT       导出纯MCP JSON配置到指定文件
   --no-backup           不创建配置文件备份
   -v, --version         显示版本信息
 ```
 
 ## 🔧 高级用法
+
+### 导出纯MCP JSON配置
+
+你可以将ModelScope的MCP服务导出为纯JSON格式，用于其他应用或备份：
+
+```bash
+# 导出到指定文件
+chatbox-modelscope-sync --token YOUR_TOKEN --export mcp-servers.json
+
+# 导出到当前目录
+chatbox-modelscope-sync --token YOUR_TOKEN --export ./modelscope-mcp.json
+
+# 导出到绝对路径
+chatbox-modelscope-sync --token YOUR_TOKEN --export /path/to/mcp-config.json
+```
+
+导出的JSON格式只包含`mcpServers`字段，符合标准MCP配置规范：
+
+```json
+{
+  "mcpServers": {
+    "server-1": {
+      "command": "npx",
+      "args": ["-y", "@modelscope/mcp-server"],
+      "env": {
+        "API_KEY": "your-key"
+      }
+    },
+    "server-2": {
+      "url": "https://modelscope.cn/api/mcp/server2"
+    }
+  }
+}
+```
 
 ### 自定义API端点
 

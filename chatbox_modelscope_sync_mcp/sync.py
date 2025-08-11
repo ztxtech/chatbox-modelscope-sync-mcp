@@ -424,3 +424,72 @@ class ModelScopeMCPSync:
         self.save_config(config, config_path)
         print(f"同步完成: 更新{updated_count}个, 新增{added_count}个")
         return True
+
+    def export_mcp_json_to_file(self, output_path):
+        """
+        导出纯MCP JSON格式到指定文件
+
+        将ModelScope的MCP服务转换为标准的mcp.json格式并保存到指定路径。
+
+        Args:
+            output_path (str): 输出文件路径
+
+        Returns:
+            bool: 导出成功返回True，失败返回False
+
+        输出格式：
+            {
+                "mcpServers": {
+                    "server-name": {
+                        "type": "sse",
+                        "url": "https://example.com/sse"
+                    }
+                }
+            }
+        """
+        try:
+            print("正在调用ModelScope API...")
+            api_response = self.call_modelscope_api()
+
+            valid_servers = self.filter_valid_servers(api_response)
+            if not valid_servers:
+                print("没有找到有效的MCP服务器")
+                return False
+
+            mcp_servers = {}
+            for server_info in valid_servers:
+                name = server_info['name']
+                url = server_info['url']
+
+                # 转换为安全的key名称（替换空格和特殊字符）
+                safe_name = name.lower().replace(' ', '-').replace('_', '-')
+                safe_name = ''.join(c for c in safe_name if c.isalnum() or c == '-')
+
+                # 确保SSE URL格式
+                if not url.endswith('/sse'):
+                    if not url.endswith('/'):
+                        url = url + '/'
+                    url = url + 'sse'
+
+                mcp_servers[safe_name] = {
+                    "type": "sse",
+                    "url": url
+                }
+
+            output_data = {"mcpServers": mcp_servers}
+
+            # 创建输出目录（如果不存在）
+            output_dir = os.path.dirname(output_path)
+            if output_dir:
+                os.makedirs(output_dir, exist_ok=True)
+
+            # 写入JSON文件
+            with open(output_path, 'w', encoding='utf-8') as f:
+                json.dump(output_data, f, indent=2, ensure_ascii=False)
+
+            print(f"MCP JSON已导出到: {output_path}")
+            return True
+
+        except Exception as e:
+            print(f"导出失败: {e}")
+            return False

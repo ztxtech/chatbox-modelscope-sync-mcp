@@ -10,7 +10,7 @@ build-backend = "setuptools.build_meta"
 #    - 这是关于你的包的核心信息，PyPI会展示这些内容。
 [project]
 name = "chatbox-modelscope-sync-mcp"
-version = "0.0.1"
+version = "0.0.2"
 authors = [
     { name = "ztxtech", email = "ztxtech@foxmail.com" },
 ]
